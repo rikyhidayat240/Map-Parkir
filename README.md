@@ -1,8 +1,8 @@
-# Lahan Parkir — Jalan Santai Dies Natalis ke-64 Unud
+# 🗺️ Lahan Parkir — Jalan Santai Dies Natalis ke-64 Unud
 
 Sebuah aplikasi peta interaktif berbasis web sederhana (Single-Page Application) untuk memudahkan peserta Jalan Santai Dies Natalis ke-64 Universitas Udayana dalam menemukan titik-titik lahan parkir yang tersedia.
 
-## Fitur Utama
+## ✨ Fitur Utama
 
 - **Peta Interaktif**: Menampilkan titik lahan parkir menggunakan library [Leaflet.js](https://leafletjs.com/).
 - **Informasi Parkir**: Detail informasi setiap lahan parkir, dilengkapi dengan foto (slider foto jika ada lebih dari satu foto).
@@ -10,7 +10,7 @@ Sebuah aplikasi peta interaktif berbasis web sederhana (Single-Page Application)
 - **Navigasi Rute**: Terintegrasi dengan Google Maps untuk memberikan arahan rute (navigasi) dari posisi pengguna menuju lahan parkir terpilih.
 - **Daftar Lahan Parkir**: Menampilkan list seluruh lahan parkir yang tersedia untuk kemudahan pencarian.
 
-## Struktur Direktori
+## 📂 Struktur Direktori
 
 ```text
 Map Parkir/
@@ -21,17 +21,17 @@ Map Parkir/
 └── parkir.json       # Database statis berbentuk JSON berisi koordinat dan info parkir
 ```
 
-## Teknologi yang Digunakan
+## 🛠️ Teknologi yang Digunakan
 
 - **HTML5 & CSS3**: Struktur dan desain antarmuka (Responsive UI / Mobile-friendly).
 - **Vanilla JavaScript (ES6)**: Logika aplikasi, fetch data JSON, slider gambar, dan akses Geolocation API.
 - **Leaflet.js**: Library open-source JavaScript untuk peta interaktif (menggunakan base map dari OpenStreetMap).
 
-## Cara Menjalankan Secara Lokal
+## 🚀 Cara Menjalankan Secara Lokal
 
-Karena aplikasi ini melakukan request data menggunakan fungsi `fetch()` ke file `parkir.json`, aplikasi ini tidak bisa dijalankan hanya dengan klik dua kali (klik ganda) file `index.html` di beberapa browser (akan terkena isu *CORS* pada protokol `file://`).
+Karena aplikasi ini melakukan request data menggunakan fungsi `fetch()` ke file `parkir.json`, aplikasi ini **tidak bisa** dijalankan hanya dengan klik ganda file `index.html` di browser (akan terkena isu *CORS* pada protokol `file://`).
 
-Anda memerlukan *local web server* untuk menjalankannya:
+Anda memerlukan *local web server* untuk menjalankannya. Berikut beberapa cara yang bisa digunakan:
 
 ### Menggunakan VS Code (Disarankan)
 1. Buka folder `Map Parkir` di Visual Studio Code.
@@ -40,28 +40,37 @@ Anda memerlukan *local web server* untuk menjalankannya:
 4. Browser akan otomatis terbuka di `http://127.0.0.1:5500`.
 
 ### Menggunakan Node.js
-Jika Anda sudah menginstal Node.js, Anda dapat menggunakan `http-server` atau `serve`:
+Jika Anda sudah menginstal Node.js, Anda dapat menggunakan `serve` atau `http-server`:
 ```bash
 npx serve .
 # atau
 npx http-server .
 ```
-Lalu buka alamat localhost yang diberikan (biasanya `http://localhost:3000` atau `http://localhost:8080`) di browser Anda.
+Lalu buka alamat localhost yang diberikan di terminal (biasanya `http://localhost:3000` atau `http://localhost:8080`) melalui browser Anda.
 
-## Penambahan Data Parkir Baru
+### Menggunakan Python
+Jika Anda memiliki Python terinstal di komputer:
+```bash
+# Python 3
+python -m http.server 8000
+```
+Lalu buka `http://localhost:8000` di browser.
+
+## 📝 Penambahan Data Parkir Baru
 
 Anda bisa menambah, mengedit, atau menghapus titik parkir dengan memodifikasi file `parkir.json`.
 
-Contoh struktur datanya:
+Contoh struktur data untuk satu lokasi parkir:
 ```json
 {
-  "name": "Nama Lokasi Parkir",
+  "id": "p8",
+  "name": "Nama Lokasi Parkir Baru",
   "lat": -8.798150,
   "lng": 115.171801,
-  "notes": "Keterangan opsional mengenai parkiran ini.",
   "photos": [
-    "foto/p1-1.jpeg"
-  ]
+    "foto/p8-1.jpeg"
+  ],
+  "notes": "Keterangan opsional mengenai parkiran ini."
 }
 ```
 *Pastikan format file JSON valid agar peta dapat dimuat dengan baik.*
