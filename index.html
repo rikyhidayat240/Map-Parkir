@@ -130,8 +130,28 @@
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
 
-  .park-pin{width:28px;height:28px;border-radius:9px;background:var(--orange);border:2px solid var(--card);box-shadow:0 2px 6px rgba(0,0,0,.35);color:var(--card);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-  .me-pin{width:18px;height:18px;border-radius:50%;background:var(--accent-blue);border:3px solid var(--card);box-shadow:0 0 0 4px rgba(31,122,224,.3);}
+  .park-pin{
+    width:28px;height:28px;border-radius:9px;background:var(--orange);border:2px solid var(--card);
+    box-shadow:0 2px 8px rgba(0,0,0,.35);color:var(--card);font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    animation:park-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes park-pulse{
+    0%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(255,107,0,.35);}
+    50%{transform:scale(1.13);box-shadow:0 4px 16px rgba(255,107,0,.6);}
+  }
+  /* User location dot: ripple ring */
+  .me-pin{
+    width:18px;height:18px;border-radius:50%;background:var(--accent-blue);border:3px solid var(--card);
+    box-shadow:0 0 0 0 rgba(31,122,224,.45);
+    animation:me-ripple 1.8s ease-out infinite;
+    will-change:box-shadow;
+  }
+  @keyframes me-ripple{
+    0%{box-shadow:0 0 0 0 rgba(31,122,224,.5);}
+    70%{box-shadow:0 0 0 10px rgba(31,122,224,0);}
+    100%{box-shadow:0 0 0 0 rgba(31,122,224,0);}
+  }
 
   .leaflet-control-attribution{font-size:9px !important;}
   .leaflet-control-zoom{margin-top:70px !important;}
@@ -310,55 +330,76 @@
   function updatePhoto(){
     const slider = DOM.slider;
     const fallback = DOM.fallback;
+    const loading = document.getElementById('photoLoading');
     const prevBtn = DOM.prevBtn;
     const nextBtn = DOM.nextBtn;
     const dots = DOM.dots;
-    const photos = (activeLot && activeLot.photos) || [];
+    const photos = (activeLot && activeLot.photos && activeLot.photos.length) ? activeLot.photos : [];
 
     if (slider._currentLot !== activeLot) {
+      // New lot: rebuild slider from scratch
       slider.innerHTML = '';
       slider.style.transition = 'none';
-      slider.style.transform = `translateX(0%)`;
-      void slider.offsetWidth; // force reflow
+      slider.style.transform = 'translateX(0%)';
+      void slider.offsetWidth; // force reflow before re-enabling transition
       slider.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
       slider._currentLot = activeLot;
-      
-      if(photos.length){
+      photoIdx = 0; // always reset to first photo for new lot
+
+      if (photos.length) {
         fallback.style.display = 'none';
+        loading.style.display = 'flex'; // show spinner while loading
+        let loaded = 0;
         photos.forEach(src => {
           const img = document.createElement('img');
-          img.onerror = function() { this.style.opacity = '0'; fallback.style.display = 'flex'; };
+          img.onload = () => {
+            loaded++;
+            if (loaded === 1) loading.style.display = 'none'; // hide after first image ready
+          };
+          img.onerror = function() {
+            this.style.opacity = '0';
+            loaded++;
+            if (loaded === photos.length) {
+              loading.style.display = 'none';
+              fallback.style.display = 'flex';
+            }
+          };
           img.src = src;
           slider.appendChild(img);
         });
       } else {
+        loading.style.display = 'none';
         fallback.style.display = 'flex';
       }
     } else {
+      // Same lot, just slide to photoIdx
       slider.style.transform = `translateX(-${photoIdx * 100}%)`;
     }
 
+    // Update nav & dots
     const showNav = photos.length > 1;
     prevBtn.style.display = showNav ? 'flex' : 'none';
     nextBtn.style.display = showNav ? 'flex' : 'none';
     dots.innerHTML = '';
-    if(showNav){
-      photos.forEach((_, i)=>{
+    if (showNav) {
+      photos.forEach((_, i) => {
         const d = document.createElement('span');
-        if(i === photoIdx) d.classList.add('active');
+        if (i === photoIdx) d.classList.add('active');
         dots.appendChild(d);
       });
     }
   }
 
   document.getElementById('photoPrev').addEventListener('click', ()=>{
-    if(!activeLot || !activeLot.photos.length) return;
-    photoIdx = (photoIdx - 1 + activeLot.photos.length) % activeLot.photos.length;
+    const photos = (activeLot && activeLot.photos) || [];
+    if (photos.length < 2) return;
+    photoIdx = (photoIdx - 1 + photos.length) % photos.length;
     updatePhoto();
   });
   document.getElementById('photoNext').addEventListener('click', ()=>{
-    if(!activeLot || !activeLot.photos.length) return;
-    photoIdx = (photoIdx + 1) % activeLot.photos.length;
+    const photos = (activeLot && activeLot.photos) || [];
+    if (photos.length < 2) return;
+    photoIdx = (photoIdx + 1) % photos.length;
     updatePhoto();
   });
 
@@ -376,13 +417,14 @@
   }, {passive: true});
 
   function handleSwipe() {
-    if(!activeLot || !activeLot.photos.length || activeLot.photos.length <= 1) return;
+    const photos = (activeLot && activeLot.photos) || [];
+    if (photos.length <= 1) return;
     const threshold = 30;
     if (touchStartX - touchEndX > threshold) {
-      photoIdx = (photoIdx + 1) % activeLot.photos.length;
+      photoIdx = (photoIdx + 1) % photos.length;
       updatePhoto();
     } else if (touchEndX - touchStartX > threshold) {
-      photoIdx = (photoIdx - 1 + activeLot.photos.length) % activeLot.photos.length;
+      photoIdx = (photoIdx - 1 + photos.length) % photos.length;
       updatePhoto();
     }
   }
@@ -428,7 +470,7 @@
     }, err=>{
       showToast(err.code === 1 ? 'Izin lokasi ditolak' : 'Gagal mengambil lokasi');
       stopLocating();
-    }, { enableHighAccuracy:true, maximumAge:1500, timeout:12000 });
+    }, { enableHighAccuracy:true, maximumAge:2000, timeout:15000 });
 
     locating = true;
     document.getElementById('liveBadge').classList.add('live');
@@ -449,7 +491,8 @@
 
   async function loadData(){
     try{
-      const res = await fetch('parkir.json', { cache:'no-store' });
+      // Removed cache:'no-store' — allow browser to cache parkir.json for faster repeat loads
+      const res = await fetch('parkir.json');
       if(!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       lots = data.parkingLots || [];
