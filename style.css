@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --navy: #114084;
   --navy-dark: #1D546C;
   --orange: #FF6B00;
@@ -136,6 +136,7 @@ header .qr-btn svg { width: 16px; height: 16px; }
   box-shadow: 0 2px 8px rgba(0,0,0,.35); color: var(--card); font-size: 12px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   animation: park-pulse 2.4s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes park-pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,107,0,.35); }

@@ -1,4 +1,4 @@
-﻿const ACCENT_BLUE = '#1f7ae0'; // sinkron manual dgn var(--accent-blue) di CSS
+const ACCENT_BLUE = '#1f7ae0'; // sinkron manual dgn var(--accent-blue) di CSS
 
 let lots    = [];
 let map;
@@ -120,6 +120,7 @@ function updatePhoto() {
     slider.innerHTML = '';
     slider.style.transition = 'none';
     slider.style.transform  = 'translateX(0%)';
+    slider.style.willChange = 'transform'; // GPU layer untuk animasi smooth
     void slider.offsetWidth;
     slider.style.transition  = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
     slider._currentLot = activeLot;
@@ -221,8 +222,11 @@ function startLocating() {
 }
 
 function stopLocating() {
-  if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+  if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
   locating = false;
+  // Hapus marker dari peta agar tidak duplikat saat tracking dimulai ulang
+  if (userMarker)   { userMarker.remove();   userMarker   = null; }
+  if (userAccuracy) { userAccuracy.remove(); userAccuracy = null; }
 }
 
 // ─── Event Listeners ──────────────────────────────────────────────────────────
