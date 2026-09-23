@@ -131,23 +131,31 @@ function updatePhoto() {
       loading.style.display  = 'flex';
       let loaded = 0;
       photos.forEach(src => {
-        const img    = document.createElement('img');
-        img.onload   = () => { loaded++; if (loaded === 1) loading.style.display = 'none'; };
-        img.onerror  = function () {
+        const img = document.createElement('img');
+        // Set src setelah handler terpasang agar cached image juga trigger onload
+        img.onload = () => {
+          loaded++;
+          if (loaded === 1) loading.style.display = 'none';
+        };
+        img.onerror = function () {
           this.style.opacity = '0';
           loaded++;
-          if (loaded === photos.length) { loading.style.display = 'none'; fallback.style.display = 'flex'; }
+          if (loaded === photos.length) {
+            loading.style.display  = 'none';
+            fallback.style.display = 'flex';
+          }
         };
-        img.src = src;
+        img.src = src; // src setelah handler
         slider.appendChild(img);
       });
     } else {
       loading.style.display  = 'none';
       fallback.style.display = 'flex';
     }
-  } else {
-    slider.style.transform = `translateX(-${photoIdx * 100}%)`;
   }
+
+  // Selalu sinkronkan transform dengan photoIdx (baik lot baru maupun navigasi foto)
+  slider.style.transform = `translateX(-${photoIdx * 100}%)`;
 
   const showNav = photos.length > 1;
   prevBtn.style.display = showNav ? 'flex' : 'none';

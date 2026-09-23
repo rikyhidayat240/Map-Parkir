@@ -104,7 +104,7 @@ header .qr-btn svg { width: 16px; height: 16px; }
 .detail-body p.sub { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); }
 .photo-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted); background: var(--photo-bg); z-index: 2; }
 .photo-fallback span { font-size: 12px; font-weight: 500; }
-.photo-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--photo-bg); z-index: 0; }
+.photo-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--photo-bg); z-index: 3; }
 .photo-loading .spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(17,64,132,.15); border-top-color: var(--navy); animation: photo-spin .7s linear infinite; }
 @keyframes photo-spin { to { transform: rotate(360deg); } }
 .photo-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(0,0,0,.35); color: var(--card); font-size: 17px; line-height: 1; display: none; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 3; }
